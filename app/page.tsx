@@ -5,12 +5,14 @@ import * as THREE from "three";
 import { Camera, X, Smartphone, Chrome } from "lucide-react";
 
 const ARFoodMenu = () => {
-  const [selectedDish, setSelectedDish] = useState(null);
+  const [selectedDish, setSelectedDish] = useState<
+    (typeof dishes)[number] | null
+  >(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
-  const canvasRef = useRef(null);
-  const sceneRef = useRef(null);
-  const rendererRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
   // Sample menu data
   const dishes = [
@@ -50,15 +52,15 @@ const ARFoodMenu = () => {
 
   useEffect(() => {
     // Detect device type
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    const iOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    const userAgent = navigator.userAgent || (window as any).opera || "";
+    const iOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
     const android = /android/i.test(userAgent);
 
     setIsIOS(iOS);
     setIsAndroid(android);
   }, []);
 
-  const createDishModel = (shape, color) => {
+  const createDishModel = (shape: string, color: number): THREE.Group => {
     const group = new THREE.Group();
 
     switch (shape) {
@@ -178,7 +180,7 @@ const ARFoodMenu = () => {
     return group;
   };
 
-  const start3DPreview = (dish) => {
+  const start3DPreview = (dish: (typeof dishes)[number]) => {
     setSelectedDish(dish);
 
     setTimeout(() => {
